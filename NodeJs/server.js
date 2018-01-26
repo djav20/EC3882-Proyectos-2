@@ -21,10 +21,12 @@ var port = new SerialPort('COM3', {
   highWaterMark: 5
 });
 
-var header = 'f';
+const header = 'f';
+const buffersToSend = 2500;
 var buffer = new Array();
 var bufferLeft = 0;
 var bufferSize;
+var sentBuffers = 0;
 
 port.on('open', function(){
   timer.setInterval(readSerial, '', '10m'); // Ejecutamos readSerial() cada 200 microsegundos.
@@ -39,7 +41,7 @@ function newConnection(socket){
 
 function readSerial(){
   var hexaInt = port.read(1); // Retorna array con el dato en decimal.
-  if(hexaInt != null){ // Si lee algo se cumple.
+  if(hexaInt != null){ // Si lee algo.
     var hexaChar = hexaInt[0].toString(16); // Convertimos el dato a hexadecimal (dos caracteres).
     var hexaFirst = hexaChar[0]; // Asignamos el primer caracter.
     if(hexaFirst == header){ // Revisamos si es el header (f).
@@ -53,9 +55,14 @@ function readSerial(){
         if(buffer.length == bufferSize){ // Si el array tiene el tamaño correcto. 
           var channel1 = bluffConvertion(buffer[0], buffer[1]); // Revertimos el protocolo canal 1.
           console.log(channel1.analogic);
-          var channel2 = bluffConvertion(buffer[2], buffer[3]); // Revertimos el protocolo canal 2.
-          console.log(channel2.analogic);
+          //var channel2 = bluffConvertion(buffer[2], buffer[3]); // Revertimos el protocolo canal 2.
+          //console.log(channel2.analogic);
+
           io.sockets.emit('data', channel1.analogic);
+
+          if(++sentBuffers > buffersToSend){
+            stopMeasure();
+          }
         }
         buffer = new Array(); // Vaciamos nuestro array.
       }
@@ -63,9 +70,11 @@ function readSerial(){
     else{
     }
   }
-  else{
-    console.log('null')
-  }
+}
+
+function stopMeasure(){
+  timer.clearInterval();
+  io.sockets.emit('done');
 }
 
 function end(func){
@@ -106,3 +115,7 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
   //result = map(d, 0, 4096, 1, 500);
   return result;
 }
+
+function map(n, start1, stop1, start2, stop2) {
+  return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
+};
