@@ -25,10 +25,47 @@ function setup(){
 function draw(){
   if(array.length != 0){
     //paint(array[0]);
-    paint(200);
+    //paint(200);
+    paint2(300);
     array.splice(0,1);
     console.log("data drawn");
   }
+
+  /*if(array.length > 20){
+    //paint(array[0]);
+    //paint(200);
+    var tempArray = array;
+    array.splice(0,20);
+    paint3(tempArray);
+    
+    console.log("data drawn");
+  }*/
+}
+
+
+function paint2(result){
+  loadPixels();
+  index = (windowWidth*(windowHeight-result)) + x;
+  pixels[index] = 0;
+  updatePixels();
+  if(++x == windowWidth){
+    background(100);
+    x = 0;
+  }
+}
+
+function paint3(array){
+  loadPixels();
+  for(var i = 0; i < array.length; i++){
+    index = (windowWidth*(windowHeight-result)) + x;
+    pixels[index] = 0;
+    if(++x == windowWidth){
+      background(100);
+      x = 0;
+    }
+  }
+  updatePixels();
+  
 }
 
 function paint(result){
