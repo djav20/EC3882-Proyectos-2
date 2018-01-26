@@ -1,0 +1,11 @@
+#VS Code Configuration Folder
+.vscode*
+
+# Dependency directories
+NodeJs/node_modules/
+
+# Typescript v1 declaration files
+typings/
+
+# Optional npm cache directory
+.npm
