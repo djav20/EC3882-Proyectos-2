@@ -5,6 +5,7 @@ socket.on('data', function(data){
   console.log("data arrived");
   array.push(data);
 });
+p5.disableFriendlyErrors = true;
 
 var variables = 0;
 var array = new Array();
@@ -16,7 +17,7 @@ var x = 0;
 var y;
 
 function setup(){
-  createCanvas(windowWidth,windowHeight);
+  createCanvas(1280,480);
   frameRate(1000);
   background(100);
 }
@@ -37,9 +38,9 @@ function paint(result){
   else{
     stroke(0);
   }
-  //fill(0);
-  //rect(x, windowHeight - result,1,1);
-  line(lastX, lastY, x, windowHeight - result);
+  fill(0);
+  rect(x, windowHeight - result,1,1);
+  //line(lastX, lastY, x, windowHeight - result);
   
   lastX = x;
   lastY = windowHeight - result;
