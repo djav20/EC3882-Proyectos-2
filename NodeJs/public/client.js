@@ -10,9 +10,8 @@ var dataa = 0;
 function setup(){
   createCanvas(720,720);
   frameRate(frames);
-  background(255);
+  background(100);
 }
-
 
 function draw(){
   if(dataa != 0){
