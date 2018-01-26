@@ -27,7 +27,7 @@ var bufferLeft = 0;
 var bufferSize;
 
 port.on('open', function(){
-  timer.setInterval(readSerial, '', '200u'); // Ejecutamos readSerial() cada 200 microsegundos.
+  timer.setInterval(readSerial, '', '10m'); // Ejecutamos readSerial() cada 200 microsegundos.
 });
 
 // Funciones de socket.
@@ -61,6 +61,9 @@ function readSerial(){
     else{
     }
   }
+  else{
+    console.log('null')
+  }
 }
 
 function end(func){
@@ -85,6 +88,6 @@ function bluffConvertion(a, b){
   d = c | e;
   d = d >> 1;
 
-  //result = map(d, 0, 4096, 1, windowHeight);
+  //result = map(d, 0, 4096, 1, 500);
   return d;
 }
