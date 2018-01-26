@@ -1,5 +1,19 @@
+// Importamos librerias.
+
 const SerialPort = require('serialport');
 const NanoTimer = require('nanotimer');
+const express = require('express');
+const socket = require('socket.io');
+
+// Configuracion del servidor.
+
+var app = express();
+var server = app.listen(3000);
+var io = socket(server);
+app.use(express.static('public'));
+io.sockets.on('connection', newConnection);
+
+// Configuracion del serial.
 
 var timer = new NanoTimer();
 var port = new SerialPort('COM3', {
@@ -7,13 +21,19 @@ var port = new SerialPort('COM3', {
   highWaterMark: 5
 });
 
-var i = 0;
-var j = 0;
 var header = 'f';
-
 var buffer = new Array();
 var bufferLeft = 0;
 var bufferSize;
+
+port.on('open', function(){
+  timer.setInterval(readSerial, '', '200u'); // Ejecutamos readSerial() cada 200 microsegundos.
+});
+
+// Funciones de socket.
+
+function newConnection(socket){
+}
 
 // Con 10 segundos de test el 0.01% de los buffers viene con un byte adicional. La funcion lo desecha y se autosincroniza sin perder datos.
 
@@ -33,6 +53,7 @@ function readSerial(){
         if(buffer.length == bufferSize){ // Si el array tiene el tamaño correcto. 
           var channel1 = bluffConvertion(buffer[0], buffer[1]); // Revertimos el protocolo.
           console.log(channel1);
+          io.sockets.emit('data', channel1);
         }
         buffer = new Array(); // Vaciamos nuestro array.
       }
@@ -41,11 +62,6 @@ function readSerial(){
     }
   }
 }
-
-port.on('open', function(){
-  //timer.setInterval(testTimer, '', '1007u');
-  timer.setInterval(readSerial, '', '200u'); // Ejecutamos readSerial() cada 200 microsegundos.
-});
 
 function end(func){
   func.clearInterval(); // Dejamos de ejectuar readSerial().
@@ -71,19 +87,4 @@ function bluffConvertion(a, b){
 
   //result = map(d, 0, 4096, 1, windowHeight);
   return d;
-}
-
-// Con esta probamos la lectura del buffer completo cada X segundos. Se consideran paquetes buenos los que empiecen con F1.
-// Esta funcion no se usa.
-function testTimer(){
-  var x = port.read();
-  if(x != null){
-    console.log(x);
-    if(++j == 3){
-      timer.setTimeout(end, [timer], '5s');
-    }
-    if(x[0] == 241){ // Mandar F1 para esto.
-      i++;
-    }
-  }
 }
