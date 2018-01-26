@@ -51,9 +51,11 @@ function readSerial(){
       if(--bufferLeft == 0){ // Si se lleno el array en este momento.
         console.log(buffer);
         if(buffer.length == bufferSize){ // Si el array tiene el tamaño correcto. 
-          var channel1 = bluffConvertion(buffer[0], buffer[1]); // Revertimos el protocolo.
-          console.log(channel1);
-          io.sockets.emit('data', channel1);
+          var channel1 = bluffConvertion(buffer[0], buffer[1]); // Revertimos el protocolo canal 1.
+          console.log(channel1.analogic);
+          var channel2 = bluffConvertion(buffer[2], buffer[3]); // Revertimos el protocolo canal 2.
+          console.log(channel2.analogic);
+          io.sockets.emit('data', channel1.analogic);
         }
         buffer = new Array(); // Vaciamos nuestro array.
       }
@@ -71,23 +73,36 @@ function end(func){
   console.log('Paquetes correctos: ' + i/j*100 + '%');
 }
 
-function bluffConvertion(a, b){
+function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos significativos
   var c = 0;
   var e = 0;
   var d = 0;
-  var result;
+  var digital1 = 0;
+  var digital2 = 0;
+  var result ={
+    digital1: 0,
+    digital2: 0,
+    analogic: 0
+  };
 
   //0XX1 1111 // to 1111 1100 1100
   //0100 1100
-  
+  digital1 = a & 0x40;
+  digital1 = digital1 >> 6;
+  digital2 = a & 0x20;
+  digital2 = digital2 >> 5;
+
   a = a & 0x1F;
   b = b << 1;
   c = (a << 8);
   e = b;
   e = e & 0x00FF;
   d = c | e;
-  d = d >> 1;
+  d = d >> 1; // Resultado analogico.
 
+  result.digital1 = digital1;
+  result.digital2 = digital2;
+  result.analogic = d;
   //result = map(d, 0, 4096, 1, 500);
-  return d;
+  return result;
 }

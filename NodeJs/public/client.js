@@ -16,7 +16,6 @@ function setup(){
   frameRate(100);
   pixelDensity(1);
   background(0);
-  
 
   socket = io.connect('http://localhost:3000');
   socket.on('data', function(data){
