@@ -1,20 +1,27 @@
 var socket;
+var add = document.getElementById("xplus");
+var sub = document.getElementById("xminus");
 
-p5.disableFriendlyErrors = true;
+
+//p5.disableFriendlyErrors = true;
 
 var array = new Array();
-var x = 0;
+//var x = 0;
 var clearScreen = false;
 var start = false;
 
 // Configuracion del osciloscopio.
 
-const packetSize = 40;
-const frames = 60; // 1000 para tiempo real
-var xFactor = 1;
-var bottomMapLimit = 200;
-var topMapLimit = 400;
+var packetSize = 60;
+const frames = 1000; // 1000 para tiempo real
+var x = 0;
+var lastX = 0;
+var lastY = -1;
 
+var xFactor = 2;
+var bottomMapLimit = 50;
+var topMapLimit = 400;
+var digital1 = 0;
 
 function setup(){
   createCanvas(1280,500);
@@ -26,7 +33,10 @@ function setup(){
   socket = io.connect('http://localhost:3000');
 
   socket.on('data', function(data){
-    array.push(map(d, 0, 4096, bottomMapLimit, topMapLimit)); // Guardamos todo lo que venga en esta variable.
+    
+    //console.log(data);
+    array.push(Math.floor(map(data.analogic, 0, 4096, bottomMapLimit, topMapLimit))); // Guardamos todo lo que venga en esta variable.
+    digital1 = data.digital1;
   });
 
   socket.on('done', function(){
@@ -39,19 +49,69 @@ function draw(){
     background(255);
     clearScreen = false;
   }
-  if(start){
+  /*if(start){
     if(array.length != 0){
       paintPixel(array.splice(0,1));
     }
-  }
-
-  // Funciona para tiempo real. Falta voltear eje Y. Esto para realTime luego.
-  /*
-  if(array.length > packetSize){
+  }*/
+  /*if(array.length > packetSize){
     var tempArray = array;
     array.splice(0,packetSize);
     paintPackets(tempArray);
   }*/
+  // Funciona para tiempo real. Falta voltear eje Y. Esto para realTime luego.
+  
+  if(array.length > packetSize){
+    var tempArray = array.splice(0,packetSize);
+    console.log(array.length);
+    //paintPackets(tempArray);
+    paintLines(tempArray);
+  }
+}
+
+function paintLines(arrayToPaint){
+  /*stroke(0);
+  line((x - 1), lastY, x, array[0]);
+  x++;
+
+  for(var i = 1; i < array.length; i++){
+    line((x - 1), array[i-1], x, array[i]);
+    x += xFactor;
+    if(x == width){
+      x = 4;
+      clearScreen = true;
+    }
+  }
+  lastY = array[array.length - 1];*/
+  
+  for(var i = 0; i < arrayToPaint.length; i++){
+    if(lastY == -1){
+      stroke(255); 
+    }
+    else{
+      if(digital1 == 1){
+        stroke(255,0,0);
+      }
+      else{
+        stroke(0);
+      }
+      
+    }
+    
+    line(lastX, lastY, x, arrayToPaint[i]);
+    
+    lastX = x;
+    lastY = arrayToPaint[i];
+    //x++;
+    x += xFactor;
+
+    if(x >= width){
+      clearScreen = true;
+      lastX = 0;
+      lastY = -1;
+      x = 0;
+    }
+  }
 }
 
 function paintPackets(array){
@@ -85,4 +145,17 @@ function paintPixel(result){
     x = 0;
     clearScreen = true;
   }
+}
+
+function addXFactor(){
+  xFactor += 2;
+  //packetSize -= 10;
+  console.log(xFactor);
+}
+
+function subXFactor(){
+  if(xFactor >= 3){
+    xFactor -= 2;
+  }
+  console.log(xFactor);
 }

@@ -17,11 +17,11 @@ var start = false;
 
 function sendData(){
   if(start){
-    x = Math.floor(40*Math.sin(Math.PI*t)) + 41 + 80;
-    t+=(0.01);
+    x = 2048*Math.sin(Math.PI*t) + 2048;
+    t += 0.01;
     io.sockets.emit('data', x);
 
-    if(++y == 2500){
+    if(++y == 250000){
       start = false;
       io.sockets.emit('done');
       console.log('done');
