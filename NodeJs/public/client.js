@@ -19,6 +19,9 @@ var lastX = 0;
 var lastY = -1;
 
 var xFactor = 2;
+var cols;
+var rows;
+
 var bottomMapLimit = 50;
 var topMapLimit = 400;
 var digital1 = 0;
@@ -29,6 +32,10 @@ function setup(){
   // Colocar grid.
   pixelDensity(1);
   background(255);
+  var xResolution = 20;
+  var yResolution = 20;
+  cols = Math.floor(width / xResolution);
+  rows = Math.floor(height / yResolution);
 
   socket = io.connect('http://localhost:3000');
 
@@ -47,6 +54,7 @@ function setup(){
 function draw(){
   if(clearScreen){
     background(255);
+    grid();
     clearScreen = false;
   }
   /*if(start){
@@ -158,4 +166,9 @@ function subXFactor(){
     xFactor -= 2;
   }
   console.log(xFactor);
+}
+
+function grid(){
+	// Dibujamos las lineas guia en todo el laberinto (las paredes blancas).
+  stroke(50); // Lineas grises.
 }
