@@ -21,6 +21,8 @@ var lastY = -1;
 var xFactor = 2;
 var cols;
 var rows;
+var xResolution;
+var yResolution;
 
 var bottomMapLimit = 50;
 var topMapLimit = 400;
@@ -32,8 +34,8 @@ function setup(){
   // Colocar grid.
   pixelDensity(1);
   background(255);
-  var xResolution = 20;
-  var yResolution = 20;
+  xResolution = 20;
+  yResolution = 160;
   cols = Math.floor(width / xResolution);
   rows = Math.floor(height / yResolution);
 
@@ -42,13 +44,11 @@ function setup(){
   socket.on('data', function(data){
     
     //console.log(data);
-    array.push(Math.floor(map(data.analogic, 0, 4096, bottomMapLimit, topMapLimit))); // Guardamos todo lo que venga en esta variable.
+    array.push(Math.floor(map(data.analogic, 0, 4096, height, 0))); // Guardamos todo lo que venga en esta variable.
     digital1 = data.digital1;
   });
 
-  socket.on('done', function(){
-    start = true; // Cuando estemos listos empezamos a dibujar.
-  });
+  grid();
 }
 
 function draw(){
@@ -57,17 +57,6 @@ function draw(){
     grid();
     clearScreen = false;
   }
-  /*if(start){
-    if(array.length != 0){
-      paintPixel(array.splice(0,1));
-    }
-  }*/
-  /*if(array.length > packetSize){
-    var tempArray = array;
-    array.splice(0,packetSize);
-    paintPackets(tempArray);
-  }*/
-  // Funciona para tiempo real. Falta voltear eje Y. Esto para realTime luego.
   
   if(array.length > packetSize){
     var tempArray = array.splice(0,packetSize);
@@ -77,21 +66,7 @@ function draw(){
   }
 }
 
-function paintLines(arrayToPaint){
-  /*stroke(0);
-  line((x - 1), lastY, x, array[0]);
-  x++;
-
-  for(var i = 1; i < array.length; i++){
-    line((x - 1), array[i-1], x, array[i]);
-    x += xFactor;
-    if(x == width){
-      x = 4;
-      clearScreen = true;
-    }
-  }
-  lastY = array[array.length - 1];*/
-  
+function paintLines(arrayToPaint){  
   for(var i = 0; i < arrayToPaint.length; i++){
     if(lastY == -1){
       stroke(255); 
@@ -103,7 +78,6 @@ function paintLines(arrayToPaint){
       else{
         stroke(0);
       }
-      
     }
     
     line(lastX, lastY, x, arrayToPaint[i]);
@@ -157,18 +131,25 @@ function paintPixel(result){
 
 function addXFactor(){
   xFactor += 2;
-  //packetSize -= 10;
+  xResolution += 20
   console.log(xFactor);
 }
 
 function subXFactor(){
   if(xFactor >= 3){
     xFactor -= 2;
+    xResolution -= 20
   }
   console.log(xFactor);
 }
 
 function grid(){
-	// Dibujamos las lineas guia en todo el laberinto (las paredes blancas).
-  stroke(50); // Lineas grises.
+  stroke(200); // Lineas grises.
+  for(var i = 0; i < cols; i++){
+    line(i*xResolution, 0, i*xResolution, height);
+  }
+
+  for(var i = 0; i < rows; i++){
+    line(0, i*yResolution, width, i*yResolution);
+  }
 }

@@ -57,6 +57,7 @@ function readSerial(){
         //console.log(tempArray);
 
         var channel1 = bluffConvertion(tempArray[0], tempArray[1]); // Revertimos el protocolo canal 1.
+        console.log(channel1.analogic)
         console.log(channel1.digital1);
         //console.log(channel1.analogic);
         io.sockets.emit('data', channel1);
