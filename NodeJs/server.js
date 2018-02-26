@@ -54,13 +54,13 @@ function readSerial(){
       buffer.push(hexaInt[0]); // Añadimos el byte al array.
       if(--bufferLeft == 0){ // Si se lleno el array en este momento.
         var tempArray = buffer;
-        //console.log(tempArray);
 
         var channel1 = bluffConvertion(tempArray[0], tempArray[1]); // Revertimos el protocolo canal 1.
+        var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
         console.log(channel1.analogic)
         console.log(channel1.digital1);
-        //console.log(channel1.analogic);
-        io.sockets.emit('data', channel1);
+
+        io.sockets.emit('data', channel1, channel2);
 
         if(++sentBuffers > buffersToSend){
           stopMeasure();
@@ -81,8 +81,6 @@ function readSerial(){
           
         }*/
       }
-    }
-    else{
     }
   }
 }
