@@ -41,11 +41,12 @@ function setup(){
 
   socket = io.connect('http://localhost:3000');
 
-  socket.on('data', function(data){
-    
-    //console.log(data);
-    array.push(Math.floor(map(data.analogic, 0, 4096, height, 0))); // Guardamos todo lo que venga en esta variable.
-    digital1 = data.digital1;
+  socket.on('data', function(channel1, channel2){
+    //array.push(Math.floor(map(channel2.analogic, 0, 4096, height, 0))); // Guardamos todo lo que venga en esta variable.
+    console.log('recibido')
+    if(channel1.analogic > 90) channel1.analogic -= 360;
+    array.push(Math.floor(map(channel1.analogic, -40, 40, height, 0))); // Guardamos todo lo que venga en esta variable.
+    digital1 = channel1.digital1;
   });
 
   grid();
@@ -59,7 +60,7 @@ function draw(){
   }
   
   if(array.length > packetSize){
-    var tempArray = array.splice(0,packetSize);
+    var tempArray = array.splice(0, packetSize);
     console.log(array.length);
     //paintPackets(tempArray);
     paintLines(tempArray);

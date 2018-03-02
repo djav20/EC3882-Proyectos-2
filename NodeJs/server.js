@@ -35,6 +35,7 @@ port.on('open', function(){
 // Funciones de socket.
 
 function newConnection(socket){
+  console.log('conectado')
   timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
 }
 
@@ -54,11 +55,16 @@ function readSerial(){
       buffer.push(hexaInt[0]); // Añadimos el byte al array.
       if(--bufferLeft == 0){ // Si se lleno el array en este momento.
         var tempArray = buffer;
-
         var channel1 = bluffConvertion(tempArray[0], tempArray[1]); // Revertimos el protocolo canal 1.
         var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
-        console.log(channel1.analogic)
+        // -40 a 40
+        // 
+        
+        //console.log('Canal 1: ');
+        //console.log(channel1.analogic);
         console.log(channel1.digital1);
+        //console.log('Canal 2: ');
+        //console.log(channel2.analogic);
 
         io.sockets.emit('data', channel1, channel2);
 
@@ -66,20 +72,6 @@ function readSerial(){
           stopMeasure();
           console.log('done');
         }
-
-        //io.sockets.emit('data', channel1.analogic);
-        /*if(buffer.length == bufferSize){ // Si el array tiene el tamaño correcto.
-          //var channel1 = bluffConvertion(buffer[0], buffer[1]); // Revertimos el protocolo canal 1.
-          //console.log(channel1.analogic);
-          //var channel2 = bluffConvertion(buffer[2], buffer[3]); // Revertimos el protocolo canal 2.
-          //console.log(channel2.analogic);
-
-          //io.sockets.emit('data', channel1.analogic);
-
-          //console.log('Digital 1 canal 1: ' + channel1.digital1);
-          //console.log('Digital 2 canal 1: ' + channel1.digital2);
-          
-        }*/
       }
     }
   }

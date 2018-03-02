@@ -31,7 +31,7 @@ function preload(){
 
 function setup() {
   // Settings.
-  createCanvas(1300, 800);
+  createCanvas(1200, 600);
   frameRate(frames);
   pixelDensity(1);
   angleMode(DEGREES);
@@ -40,7 +40,7 @@ function setup() {
   velocitySlider = createSlider(-45, 45, 0);
   velocitySlider.position(20, 20);
 
-  accelerationSlider = createSlider(0, 100, 100);
+  accelerationSlider = createSlider(0, 100, 0);
   accelerationSlider.position(20, 50);
 
   scoreText = createP('').html('Score: ' + score);

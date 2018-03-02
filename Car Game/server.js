@@ -8,7 +8,7 @@ const socket = require('socket.io');
 // Configuracion del servidor.
 
 var app = express();
-var server = app.listen(1337);
+var server = app.listen(3000);
 var io = socket(server);
 app.use(express.static('public'));
 io.sockets.on('connection', newConnection);
