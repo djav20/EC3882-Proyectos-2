@@ -51,6 +51,7 @@
 	int contadorr;
 	int contador3;
 	int dato;
+	int i;
 	unsigned int dato2;
 	unsigned int dato3;
 	unsigned char b;
@@ -112,7 +113,12 @@ while (1){
 		trama[3] = b;
 		trama[4] = c;
 		
-		sendSerial(trama, 5)
+		for(i = 0; i < 5; i++){
+			do{
+				error = AS1_SendChar(trama[i]);
+			} while (error != ERR_OK);
+		}
+		//sendSerial(trama, 5);
 		
 		/*do{
 			error = AS1_SendChar(trama[0]);

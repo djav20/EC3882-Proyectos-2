@@ -199,12 +199,14 @@ void ROLLS(float *roll_mpu1, int ax_offset_mpu1, int ay_offset_mpu1, int az_offs
 	//yaw_mpu1 = GET_ROLL(anglex, anglez);
 }
 
-void sendSerial(unsigned char array, int n){
+void sendSerial(unsigned char array[5], int n){
+	/*int i = 0;
+	unsigned char error;
 	for(i = 0; i < n; i++){
 		do{
-			error = AS1_SendChar(trama[0]);
+			error = AS1_SendChar(array[i]);
 		} while (error != ERR_OK);
-	}
+	}*/
 }
 
 //  **************************** FUNCIONES DEL PROCESADOR*****
