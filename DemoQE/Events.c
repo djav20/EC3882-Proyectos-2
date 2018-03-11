@@ -34,75 +34,10 @@ extern int contadorr;
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 
-/*
-** ===================================================================
-**     Event       :  Cap1_OnCapture (module Events)
-**
-**     Component   :  Cap1 [Capture]
-**     Description :
-**         This event is called on capturing of Timer/Counter actual
-**         value (only when the component is enabled - <Enable> and the
-**         events are enabled - <EnableEvent>.This event is available
-**         only if a <interrupt service/event> is enabled.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-
-
-
-/*
-** ===================================================================
-**     Event       :  Cap1_OnCapture (module Events)
-**
-**     Component   :  Cap1 [Capture]
-**     Description :
-**         This event is called on capturing of Timer/Counter actual
-**         value (only when the component is enabled - <Enable> and the
-**         events are enabled - <EnableEvent>.This event is available
-**         only if a <interrupt service/event> is enabled.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
-extern int tiempo;
-extern int enviar;
-extern int capture_ready;
-extern int tiempo2;
-extern int capture_ready2;
 extern int i2c_ready;
 extern int estado;
 
-void Cap1_OnCapture(void)
-{
-  /* ULTRASONIDO 1 */
-	Cap1_GetCaptureValue(&tiempo);
-	Cap1_Reset();
-	if (!(tiempo<0))capture_ready = 1;
-}
 
-/*
-** ===================================================================
-**     Event       :  Cap2_OnCapture (module Events)
-**
-**     Component   :  Cap2 [Capture]
-**     Description :
-**         This event is called on capturing of Timer/Counter actual
-**         value (only when the component is enabled - <Enable> and the
-**         events are enabled - <EnableEvent>.This event is available
-**         only if a <interrupt service/event> is enabled.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
-void Cap2_OnCapture(void)
-{
-  /* ULTRASONIDO 2 */
-	Cap2_GetCaptureValue(&tiempo2);
-	Cap2_Reset();
-	if (!(tiempo2<0))capture_ready2 = 1;
-}
 
 /*
 ** ===================================================================

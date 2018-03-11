@@ -18,9 +18,7 @@
 //*             DIRECCIONES DE LOS REGISTROS DE LOS SLAVES               *
 //************************************************************************
 
-//Dirección I2C de la IMU 1 AZUL
 #define SLAVE_ADDRESS_MPU1 0x68
-//Dirección I2C de la IMU 2 VERDE
 #define SLAVE_ADDRESS_MPU2 0x69
 
 #define MPU6050_SMPLRT_DIV     	0x19   // R/W
@@ -69,28 +67,22 @@
 
 //*****************            Matematica            *********************
 
-
 float ATAN(float y);
-float ATAN2(float  num,float den);
+float ATAN2(float num, float den);
 
 //*****************Funciones Para los Sensores MPU6050*********************
-
-
-
-
 
 
 ///FUNCIONES DE CONFIGURACION DE LOS MPU6050
 
 void MPU6050_INIT1(int *ax_offset, int *ay_offset, int *az_offset);
-void MPU6050_INIT2(int *ax_offset, int *ay_offset, int *az_offset);
 
 // FUNCIONES PARA LEER LOS SENSORES
 
 void SENSOR_READ(byte *AccelData, byte slaveAdress, byte initialAdress);
 void SENSOR_DATA(byte slaveAdress, int *AccelX, int *AccelY, int *AccelZ,int *GyroX,int *GyroY,int *GyroZ);
-float GET_ROLL(float angley,float anglez);
-void ROLLS(float *roll_mpu1,float *roll_mpu2,int ax_offset_mpu1,int ay_offset_mpu1, int az_offset_mpu1, int ax_offset_mpu2,int ay_offset_mpu2,int az_offset_mpu2);
+float GET_ROLL(float angley, float anglez);
+void ROLLS(float *roll_mpu1, int ax_offset_mpu1,int ay_offset_mpu1, int az_offset_mpu1);
 
 //FUNCIONES PARA REALIZAR I2C
 
@@ -99,16 +91,10 @@ byte I2C_READ(byte addressReg);
 void I2C_MULTIPLE_READ(byte InitialAddress,byte *DataArray,word size);
 void I2C_SELECT_SLAVE(byte slaveAddress);
 
-//PROMEDIADORES MOVILES
-float ULTRA1 (void);
-float ULTRA2 (void);
-
-
-// FUNCION PARA TRANSMITIR POR COMUNICACION SERIAL
-void SERIAL(float roll_mpu1, float roll_mpu2,float distancia1,float distancia2,byte botones);
+// SErial
+void sendSerial(unsigned char array, int n);
 
 //FUNCION DELAY  
 void DELAY(word ms);
-
 
 #endif /* A_W_FUNCTIONS_H_ */
