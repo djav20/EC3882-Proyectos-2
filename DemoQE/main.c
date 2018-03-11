@@ -40,7 +40,7 @@
 #include "PE_Error.h"
 #include "PE_Const.h"
 #include "IO_Map.h"
-#include "A_W_Functions.h"
+#include "customFunctions.h"
 #include "math.h"
 
 /* User includes (#include below this line is not maintained by Processor Expert) */

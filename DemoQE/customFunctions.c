@@ -1,5 +1,5 @@
 #include "cpu.h"
-#include "A_W_Functions.h"
+#include "customFunctions.h"
 
 // Arcotangente. Rango: [-PI/2,PI/2] 
 float ATAN(float y){                               

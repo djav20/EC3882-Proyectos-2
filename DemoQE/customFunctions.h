@@ -1,12 +1,12 @@
 /*
- * A_W_Functions.h
+ * customFunctions.h
  *
  *  Created on: Oct 18, 2016
  *      Author: Zulai
  */
 
-#ifndef A_W_FUNCTIONS_H_
-#define A_W_FUNCTIONS_H_
+#ifndef customFunctions_H_
+#define customFunctions_H_
 
 #include "PE_Types.h"
 #include "PE_Error.h"
@@ -75,4 +75,4 @@ void I2C_SELECT_SLAVE(byte slaveAddress);
 // Delay
 void delayMS(word ms);
 
-#endif /* A_W_FUNCTIONS_H_ */
+#endif /* customFunctions_H_ */
