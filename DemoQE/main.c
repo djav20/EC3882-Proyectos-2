@@ -44,19 +44,16 @@
 #include "math.h"
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-	int ax_offset_mpu1,ay_offset_mpu1,az_offset_mpu1; //Variables donde se guardan los offset de los ejes del MPU 1
-	int ax_offset_mpu2,ay_offset_mpu2,az_offset_mpu2; //Variables donde se guardan los offset de los ejes del MPU 2
-	float roll_mpu1, roll_mpu2;                       // Variables donde se guardan los Rolls de los acelerometros
-	float yaw_mpu1;
+	int ax_offset_mpu1, ay_offset_mpu1, az_offset_mpu1; // Variables donde se guardan los offset de los ejes del MPU.
+	float roll_mpu1;                      
+	
 	int contadorr;
-	int contador3;
-	int dato;
+	
 	int i;
+	int dato;
 	unsigned int dato2;
-	unsigned int dato3;
 	unsigned char b;
 	unsigned char c;
-	
 	bool digital1;
 	bool digital2;
 	unsigned char trama[5] = {0xF2, 0x00, 0x00, 0x00, 0x00};
@@ -71,21 +68,20 @@ void main(void)
   /*** End of Processor Expert internal initialization.                    ***/
   
   /* Write your code here */
-  //SETUP
-  MPU6050_INIT1(&ax_offset_mpu1, &ay_offset_mpu1, &az_offset_mpu1); //Rutina de Configuracion del MPU 1
-  AD1_Start();
+
+MPU6050_INIT1(&ax_offset_mpu1, &ay_offset_mpu1, &az_offset_mpu1);
+AD1_Start();
   
 while (1){
 	if(estado){
-		ROLLS(&roll_mpu1, ax_offset_mpu1, ay_offset_mpu1, az_offset_mpu1); // Rutina de obtencion de los Rolls de los distintos MPU
-		dato = (int) roll_mpu1;
+		ROLLS(&roll_mpu1, ax_offset_mpu1, ay_offset_mpu1, az_offset_mpu1);
 		
+		// Primer canal
+		dato = (int) roll_mpu1;
 		c = dato & 0x007F;
 		b = dato >> 7;
 		b = b & 0x1F;
-		
 		digital1 = Bit1_GetVal();
-		
 		if(digital1){
 			b = b | 0x40;
 		}
@@ -96,29 +92,28 @@ while (1){
 		trama[1] = b;
 		trama[2] = c;
 		
+		// Segundo canal
 		AD1_GetValue16(&dato2);
-	
 		dato2 = dato2 >> 4;
 		c = dato2 & 0x007F;
 		b = dato2 >> 7;
 		b = b & 0x1F;
-		
 		if(digital1){
 			b = b | 0x40;
 		}
 		if(digital2){
 			b = b | 0x20;
 		}
-		
+
 		trama[3] = b;
 		trama[4] = c;
-		
+
+		// Enviamos los canales por serial
 		for(i = 0; i < 5; i++){
 			do{
 				error = AS1_SendChar(trama[i]);
 			} while (error != ERR_OK);
 		}
-		//sendSerial(trama, 5);
 		
 		/*do{
 			error = AS1_SendChar(trama[0]);

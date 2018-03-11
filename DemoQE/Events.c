@@ -30,14 +30,12 @@
 
 #include "Cpu.h"
 #include "Events.h"
-extern int contadorr;
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 
+extern int contadorr;
 extern int i2c_ready;
 extern int estado;
-
-
 
 /*
 ** ===================================================================

@@ -14,12 +14,8 @@
 #include "IO_Map.h"
 #include "CI2C1.h"
 
-//************************************************************************
-//*             DIRECCIONES DE LOS REGISTROS DE LOS SLAVES               *
-//************************************************************************
-
+// Direcciones de los registros
 #define SLAVE_ADDRESS_MPU1 0x68
-#define SLAVE_ADDRESS_MPU2 0x69
 
 #define MPU6050_SMPLRT_DIV     	0x19   // R/W
 #define MPU6050_CONFIG         	0x1A   // R/W
@@ -47,54 +43,36 @@
 #define MPU6050_TEMP_OUT_H     	0x41   // R
 #define MPU6050_TEMP_OUT_L     	0x42   // R
 
-
 #define MPU6050_PWR_MGMT_1     0x6B   // R/W
 #define MPU6050_FIFO_R_W       	0x74   // R/W
 #define MPU6050_WHO_AM_I       	0x75   // R
 
-//************************************************************************
-//*                    Constantes de Conversion                          *
-//************************************************************************
-
-
-#define A_R 16384.0  //Ratios de conversion de bits a g
-
+// Constantes de conversion
+#define A_R 16384.0  // Ratio de conversion de bits a g
 #define PI 3.1415926
 
-//************************************************************************
-//*    			 	          FUNCIONES                                  *
-//************************************************************************
+// Funciones
 
-//*****************            Matematica            *********************
-
+// Matematica
 float ATAN(float y);
 float ATAN2(float num, float den);
 
-//*****************Funciones Para los Sensores MPU6050*********************
-
-
-///FUNCIONES DE CONFIGURACION DE LOS MPU6050
-
+// Inicializa el MPU6050
 void MPU6050_INIT1(int *ax_offset, int *ay_offset, int *az_offset);
 
-// FUNCIONES PARA LEER LOS SENSORES
-
+// Lectura del sensor
 void SENSOR_READ(byte *AccelData, byte slaveAdress, byte initialAdress);
 void SENSOR_DATA(byte slaveAdress, int *AccelX, int *AccelY, int *AccelZ,int *GyroX,int *GyroY,int *GyroZ);
 float GET_ROLL(float angley, float anglez);
 void ROLLS(float *roll_mpu1, int ax_offset_mpu1,int ay_offset_mpu1, int az_offset_mpu1);
 
-//FUNCIONES PARA REALIZAR I2C
-
-byte I2C_WRITE_REGISTER(byte addressReg,byte data);
+// I2C
+byte I2C_WRITE_REGISTER(byte addressReg, byte data);
 byte I2C_READ(byte addressReg);
-void I2C_MULTIPLE_READ(byte InitialAddress,byte *DataArray,word size);
+void I2C_MULTIPLE_READ(byte InitialAddress, byte *DataArray, word size);
 void I2C_SELECT_SLAVE(byte slaveAddress);
 
-// SErial
-void sendSerial(unsigned char array, int n);
-
-//FUNCION DELAY  
-void DELAY(word ms);
+// Delay
+void delayMS(word ms);
 
 #endif /* A_W_FUNCTIONS_H_ */
