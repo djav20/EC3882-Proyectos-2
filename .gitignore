@@ -2,8 +2,8 @@
 .vscode*
 
 # Dependency directories
-NodeJs/node_modules/
-Juego/node_modules/
+Osciloscopio/node_modules/
+Beta arco y flecha/node_modules/
 Car Game/node_modules/
 # Typescript v1 declaration files
 typings/

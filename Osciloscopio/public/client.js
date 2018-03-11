@@ -6,7 +6,6 @@ var sub = document.getElementById("xminus");
 //p5.disableFriendlyErrors = true;
 
 var array = new Array();
-//var x = 0;
 var clearScreen = false;
 var start = false;
 
@@ -31,7 +30,6 @@ var digital1 = 0;
 function setup(){
   createCanvas(1280,500);
   frameRate(frames);
-  // Colocar grid.
   pixelDensity(1);
   background(255);
   xResolution = 20;
@@ -43,12 +41,10 @@ function setup(){
 
   socket.on('data', function(channel1, channel2){
     //array.push(Math.floor(map(channel2.analogic, 0, 4096, height, 0))); // Guardamos todo lo que venga en esta variable.
-    console.log('recibido')
     if(channel1.analogic > 90) channel1.analogic -= 360;
     array.push(Math.floor(map(channel1.analogic, -40, 40, height, 0))); // Guardamos todo lo que venga en esta variable.
     digital1 = channel1.digital1;
   });
-
   grid();
 }
 
@@ -62,7 +58,6 @@ function draw(){
   if(array.length > packetSize){
     var tempArray = array.splice(0, packetSize);
     console.log(array.length);
-    //paintPackets(tempArray);
     paintLines(tempArray);
   }
 }
@@ -97,43 +92,9 @@ function paintLines(arrayToPaint){
   }
 }
 
-function paintPackets(array){
-  loadPixels();
-  for(var i = 0; i < array.length; i++){
-    index = (x + array[i] * width) * 4;
-    pixels[index] = 0;
-    pixels[index + 1] = 0;
-    pixels[index + 2] = 0;
-    pixels[index + 3] = 255;
-    x += xFactor;
-    if(x == width){
-      x = 0;
-      clearScreen = true;
-    }
-  }
-  updatePixels();
-}
-
-function paintPixel(result){
-  loadPixels();
-  index = (x + result * width) * 4;
-  pixels[index] = 0;
-  pixels[index + 1] = 0;
-  pixels[index + 2] = 0;
-  pixels[index + 3] = 255;
-  updatePixels();
-
-  x+= xFactor;
-  if(x == width){
-    x = 0;
-    clearScreen = true;
-  }
-}
-
 function addXFactor(){
   xFactor += 2;
   xResolution += 20
-  console.log(xFactor);
 }
 
 function subXFactor(){
@@ -141,7 +102,6 @@ function subXFactor(){
     xFactor -= 2;
     xResolution -= 20
   }
-  console.log(xFactor);
 }
 
 function grid(){
