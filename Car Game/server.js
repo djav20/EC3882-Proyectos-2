@@ -29,13 +29,20 @@ var bufferSize;
 var sentBuffers = 0;
 
 port.on('open', function(){
+  timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
 });
 
 // Funciones de socket.
 
 function newConnection(socket){
-  timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
+  //timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
 }
+
+// Game variables
+var acceleration = 0;
+var angle = 0;
+var carBreak = 0;
+var beep = 0;
 
 // Con 10 segundos de test el 0.01% de los buffers viene con un byte adicional. La funcion lo desecha y se autosincroniza sin perder datos.
 
@@ -56,7 +63,14 @@ function readSerial(){
         var channel1 = bluffConvertion(tempArray[0], tempArray[1]); // Revertimos el protocolo canal 1.
         var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
 
-        io.sockets.emit('data', channel1, channel2);
+        
+
+        var data = assignVariables(channel1, channel2);
+        sendData(data);
+        //console.log(channel1.digital1)
+        //console.log(channel1.analogic)
+        //console.log(channel2.analogic)
+        // io.sockets.emit('data', channel1, channel2);
 
         if(++sentBuffers > buffersToSend){
           stopMeasure();
@@ -65,6 +79,26 @@ function readSerial(){
       }
     }
   }
+}
+
+function assignVariables(channel1, channel2){
+  if(channel1.analogic > 90) channel1.analogic -= 360;
+  channel2.analogic = Math.floor(map(channel2.analogic, 0, 1950, 0, 100)) // reales: de 20 a 1910
+  angle = channel1.analogic;
+  acceleration = channel2.analogic;
+  carBreak = channel1.digital1;
+  beep = channel1.digital2;
+
+  return data = {
+    angle: angle,
+    acceleration: acceleration,
+    carBreak: carBreak,
+    beep: beep
+  }
+}
+
+function sendData(data){
+  console.log(data);
 }
 
 function stopMeasure(){

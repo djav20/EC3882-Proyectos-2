@@ -17,7 +17,6 @@ let carIsOn = false;
 
 let globalAngle = 0;
 let angleFactor = 50;
-let accelerationFactor = 150;
 let velocitySlider;
 let accelerationSlider;
 
