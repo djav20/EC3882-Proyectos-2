@@ -22,7 +22,6 @@ var port = new SerialPort('COM3', {
 });
 
 const header = 'f';
-const buffersToSend = 10000000;
 var buffer = new Array();
 var bufferLeft = 0;
 var bufferSize;
@@ -30,21 +29,22 @@ var sentBuffers = 0;
 
 port.on('open', function(){
   timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
+  timer.setInterval(game, '', '16m');
 });
 
 // Funciones de socket.
 
 function newConnection(socket){
-  //timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
 }
 
 // Game variables
-var acceleration = 0;
-var angle = 0;
-var carBreak = 0;
-var beep = 0;
 
-// Con 10 segundos de test el 0.01% de los buffers viene con un byte adicional. La funcion lo desecha y se autosincroniza sin perder datos.
+var gameVariables = {
+  acceleration = 0,
+  angle = 0,
+  carBreak = 0,
+  beep = 0
+}
 
 function readSerial(){
   var hexaInt = port.read(1); // Retorna array con el dato en decimal.
@@ -63,52 +63,30 @@ function readSerial(){
         var channel1 = bluffConvertion(tempArray[0], tempArray[1]); // Revertimos el protocolo canal 1.
         var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
 
-        
-
-        var data = assignVariables(channel1, channel2);
-        sendData(data);
-        //console.log(channel1.digital1)
-        //console.log(channel1.analogic)
-        //console.log(channel2.analogic)
-        // io.sockets.emit('data', channel1, channel2);
-
-        if(++sentBuffers > buffersToSend){
-          stopMeasure();
-          console.log('done');
-        }
+        assignVariables(channel1, channel2);
+        broadcastData('gameVariables', gameVariables);
       }
     }
   }
 }
 
+// Funcion que recibe los canales y los asigna a las variables del juego.
 function assignVariables(channel1, channel2){
   if(channel1.analogic > 90) channel1.analogic -= 360;
   channel2.analogic = Math.floor(map(channel2.analogic, 0, 1950, 0, 100)) // reales: de 20 a 1910
-  angle = channel1.analogic;
-  acceleration = channel2.analogic;
-  carBreak = channel1.digital1;
-  beep = channel1.digital2;
-
-  return data = {
-    angle: angle,
-    acceleration: acceleration,
-    carBreak: carBreak,
-    beep: beep
-  }
+  
+  gameVariables.angle = channel1.analogic;
+  gameVariables.acceleration = channel2.analogic;
+  gameVariables.carBreak = channel1.digital1;
+  gameVariables.beep = channel1.digital2;
 }
 
-function sendData(data){
-  console.log(data);
+// Envia a todos los sockets conectados el parametro params.
+function broadcastData(tag, params){
+  io.sockets.emit(tag, params);
 }
 
-function stopMeasure(){
-  timer.clearInterval();
-}
-
-function end(func){
-  func.clearInterval(); // Dejamos de ejectuar readSerial().
-}
-
+// Funcion que decodifica el protolo de comunicacion.
 function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos significativos
   var c = 0;
   var e = 0;
@@ -122,8 +100,6 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
     analogic: 0
   };
 
-  //0XX1 1111 // to 1111 1100 1100
-  //0100 1100
   digital1 = a & 0x40;
   digital1 = digital1 >> 6;
   digital2 = a & 0x20;
