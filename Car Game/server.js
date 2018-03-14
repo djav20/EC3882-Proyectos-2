@@ -29,7 +29,7 @@ var sentBuffers = 0;
 
 port.on('open', function(){
   timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
-  timer.setInterval(game, '', '16m');
+  //timer.setInterval(game, '', '16m');
 });
 
 // Funciones de socket.
@@ -39,11 +39,11 @@ function newConnection(socket){
 
 // Game variables
 
-var gameVariables = {
-  acceleration = 0,
-  angle = 0,
-  carBreak = 0,
-  beep = 0
+var gameVariables= {
+  acceleration: 0,
+  angle: 0,
+  carBreak: 0,
+  beep: 0
 }
 
 function readSerial(){
@@ -65,6 +65,7 @@ function readSerial(){
 
         assignVariables(channel1, channel2);
         broadcastData('gameVariables', gameVariables);
+        console.log(gameVariables)
       }
     }
   }
@@ -73,6 +74,7 @@ function readSerial(){
 // Funcion que recibe los canales y los asigna a las variables del juego.
 function assignVariables(channel1, channel2){
   if(channel1.analogic > 90) channel1.analogic -= 360;
+  if(channel1.analogic == -1) channel1.analogic = 0;
   channel2.analogic = Math.floor(map(channel2.analogic, 0, 1950, 0, 100)) // reales: de 20 a 1910
   
   gameVariables.angle = channel1.analogic;

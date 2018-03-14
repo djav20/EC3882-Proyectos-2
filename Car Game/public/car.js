@@ -1,10 +1,11 @@
 class Car {
-  constructor(x, y) {
+  constructor(x, y, image) {
     this.position = createVector(x, y);
     this.centerPosition = createVector(x + image.width / 2, y + image.height / 2);
     this.velocity = createVector(0, 0);
     this.trayectory = createVector(0, 0);
     this.acceleration;
+    this.image = image;
   }
 
   applyForces() {
@@ -18,12 +19,12 @@ class Car {
     return (abs(item.xCenter - this.centerPosition.x) < pixelsToCrash && abs(item.yCenter - this.centerPosition.y) < pixelsToCrash);
   }
 
-  show(image) {
+  show() {
     push();
     translate(this.position.x, this.position.y);
     rotate(this.velocity.heading());
     imageMode(CENTER);
-    image(image, 0, 0);
+    image(this.image, 0, 0);
     pop();
   }
 }
