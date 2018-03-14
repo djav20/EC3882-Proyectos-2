@@ -82,7 +82,7 @@ function assignVariables(channel1, channel2){
   gameVariables.carBreak = channel1.digital1;
   gameVariables.beep = channel1.digital2;
 }
-
+// test
 // Envia a todos los sockets conectados el parametro params.
 function broadcastData(tag, params){
   io.sockets.emit(tag, params);
