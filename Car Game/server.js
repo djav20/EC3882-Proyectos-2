@@ -29,12 +29,22 @@ var sentBuffers = 0;
 
 port.on('open', function(){
   timer.setInterval(readSerial, '', '100u'); // Ejecutamos readSerial() cada 200 microsegundos.
-  //timer.setInterval(game, '', '16m');
 });
 
 // Funciones de socket.
+let clients = new Array();
 
 function newConnection(socket){
+  socket.on('disconnect', function(){
+    clients.splice(clients.indexOf(socket, 1));
+  });
+  clients.push(socket);
+  timer.setInterval(testing, '', '100m');
+}
+
+function testing(){
+  console.log(clients.length);
+  broadcastData('gameVariables');
 }
 
 // Game variables
@@ -64,8 +74,9 @@ function readSerial(){
         var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
 
         assignVariables(channel1, channel2);
+        
         broadcastData('gameVariables', gameVariables);
-        console.log(gameVariables)
+        console.log(gameVariables);
       }
     }
   }
@@ -82,10 +93,13 @@ function assignVariables(channel1, channel2){
   gameVariables.carBreak = channel1.digital1;
   gameVariables.beep = channel1.digital2;
 }
-// test
+
 // Envia a todos los sockets conectados el parametro params.
 function broadcastData(tag, params){
-  io.sockets.emit(tag, params);
+  //io.sockets.emit(tag, params);
+  for(let i = 0; i < clients.length; i++){
+    clients[i].emit('gameVariables', {hola: i+1});
+  }
 }
 
 // Funcion que decodifica el protolo de comunicacion.
