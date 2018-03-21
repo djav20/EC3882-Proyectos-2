@@ -39,11 +39,11 @@ function newConnection(socket){
     clients.splice(clients.indexOf(socket, 1));
   });
   clients.push(socket);
-  timer.setInterval(testing, '', '100m');
+  timer.setInterval(testing, '', '16m');
 }
 
 function testing(){
-  console.log(clients.length);
+  //console.log(clients.length);
   broadcastData('gameVariables');
 }
 
@@ -76,7 +76,7 @@ function readSerial(){
         assignVariables(channel1, channel2);
         
         broadcastData('gameVariables', gameVariables);
-        console.log(gameVariables);
+        //console.log(gameVariables);
       }
     }
   }

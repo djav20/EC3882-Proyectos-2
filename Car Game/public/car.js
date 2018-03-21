@@ -19,6 +19,26 @@ class Car {
     return (abs(item.xCenter - this.centerPosition.x) < pixelsToCrash && abs(item.yCenter - this.centerPosition.y) < pixelsToCrash);
   }
 
+  checkBorders() {
+    if(this.centerPosition.x - this.image.width > width) {
+      this.position.add(-width - this.image.width, 0);
+      this.centerPosition.add(-width - this.image.width, 0);
+    } 
+    else if(this.centerPosition.x - this.image.width < 0){
+      this.position.add(width + this.image.width, 0);
+      this.centerPosition.add(width + this.image.width, 0);
+    }
+
+    if(this.centerPosition.y - this.image.width > height){
+      this.position.add(0, -height - 2*this.image.width);
+      this.centerPosition.add(0, -height - 2*this.image.width);
+    } 
+    else if (this.centerPosition.y + this.image.width < 0){
+      this.position.add(0, height + 2*this.image.width);
+      this.centerPosition.add(0, height + 2*this.image.width);
+    }
+  }
+
   show() {
     push();
     translate(this.position.x, this.position.y);
