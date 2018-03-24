@@ -49,8 +49,8 @@ function testing(){
 
 // Game variables
 
-var gameVariables= {
-  acceleration: 0,
+var gameVariables = {
+  speed: 0,
   angle: 0,
   carBreak: 0,
   beep: 0
@@ -89,7 +89,7 @@ function assignVariables(channel1, channel2){
   channel2.analogic = Math.floor(map(channel2.analogic, 0, 1950, 0, 100)) // reales: de 20 a 1910
   
   gameVariables.angle = channel1.analogic;
-  gameVariables.acceleration = channel2.analogic;
+  gameVariables.speed = channel2.analogic;
   gameVariables.carBreak = channel1.digital1;
   gameVariables.beep = channel1.digital2;
 }

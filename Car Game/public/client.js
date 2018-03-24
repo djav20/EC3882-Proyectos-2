@@ -4,27 +4,27 @@
 const frames = 60;
 const carMaxSpeed = 5;
 const pixelsToCrash = 40;
-const airDesacceleration = 0.985;
+const airDesacceleration = 0.978;
 const breaksDesacceleration = 0.965;
 
 let carImage;
 let toolImage;
 
 let car;
-let acceleration;
 let breaks = false;
 let carIsOn = false;
 
 let globalAngle = 0;
 let angleFactor = 80;
+let angleSlider;
 let velocitySlider;
-let accelerationSlider;
+let lastHighestSpeed = 0;
 
 let scoreText;
 let score = 0;
 
 let sensorVariables = {
-  acceleration: 0,
+  speed: 0,
   angle: 0,
   carBreak: 0,
   beep: 0
@@ -43,11 +43,11 @@ function setup() {
   angleMode(DEGREES);
   
   // DOM Elements.
-  velocitySlider = createSlider(-45, 45, 0);
-  velocitySlider.position(20, 20);
+  angleSlider = createSlider(-45, 45, 0);
+  angleSlider.position(20, 20);
 
-  accelerationSlider = createSlider(0, 100, 0);
-  accelerationSlider.position(20, 50);
+  velocitySlider = createSlider(0, 100, 0);
+  velocitySlider.position(20, 50);
 
   scoreText = createP('').html('Score: ' + score);
   breakButton = createButton('Break');
@@ -69,50 +69,45 @@ function setup() {
 }
 
 function draw() {
-  background(155, 184, 114);
+  background(155);
 
-  if(accelerationSlider.value() > 20 && !carIsOn && !breaks){
-  // if(sensorVariables.acceleration >= 20 && !carIsOn && !sensorVariables.carBreak){
-    carIsOn = true;
-    car.acceleration = 1;
-  }
-
-  if(carIsOn){
-    carRun();
-  }
-
+  carRun();
   tool.show();
   car.show();
 }
 
 function carRun(){
-  if(car.acceleration >= 0.2){
-    globalAngle += velocitySlider.value() / angleFactor;
+  if(car.speed > 0.1){ // Evitar girar sobre si mismo.
+    globalAngle += angleSlider.value() / angleFactor;
     // globalAngle += sensorVariables.angle / angleFactor;
   }
 
   if(globalAngle >= 360) globalAngle -= 360;
   if(globalAngle < 0) globalAngle += 360;
-
-  let acceleration = accelerationSlider.value();
-  // let acceleration = sensorVariables.acceleration;
-  if(!breaks){
-  // if(!sensorVariables.carBreak){
-    if(acceleration <= 15){
-      car.acceleration *= airDesacceleration;
-    } 
-    else if (acceleration > 15 && acceleration < 20){
-      car.acceleration *= 1;
-    } 
-    else {
-      car.acceleration *= 1 + map(acceleration, 20, 100, 0.001, 0.005);
-    }
-  } else {
-    car.acceleration *= breaksDesacceleration;
-  }
-
   car.trayectory = angleToVector(globalAngle);
+
   
+  if(!breaks){
+  //if(!sensorVariables.carBreak){
+    let currentSpeed = map(velocitySlider.value(), 0, 100, 0, carMaxSpeed);
+    // let currentSpeed = map(sensorVariables.speed, 0, 100, 0, carMaxSpeed);
+    if(car.speed > currentSpeed) { // Si desacelere.
+      car.speed *= airDesacceleration;
+    }
+    else if(car.speed < currentSpeed) {
+      if(car.speed < 0.1) car.speed = 0.8;
+      car.speed /= airDesacceleration;
+    }
+    else {
+      car.speed = currentSpeed;
+    }
+  }
+  else {
+    console.log('breaks')
+    car.speed *= breaksDesacceleration;
+  }
+  
+
   car.applyForces();
   
   if(car.checkCrash(tool)){
@@ -122,9 +117,7 @@ function carRun(){
 
   car.checkBorders();
 
-  scoreText.html('Score: ' + accelerationSlider.value());
-  
-  if(car.acceleration < 0.1) carIsOn = false;
+  scoreText.html('Score: ' + velocitySlider.value());
 }
 
 function angleToVector(localAngle){

@@ -2,15 +2,16 @@ class Car {
   constructor(x, y, image) {
     this.position = createVector(x, y);
     this.centerPosition = createVector(x + image.width / 2, y + image.height / 2);
+    this.speed;
     this.velocity = createVector(0, 0);
     this.trayectory = createVector(0, 0);
-    this.acceleration;
     this.image = image;
   }
 
   applyForces() {
-    if(this.acceleration > carMaxSpeed) this.acceleration = carMaxSpeed;
-    this.velocity = this.trayectory.mult(this.acceleration);
+    //if(this.acceleration > carMaxSpeed) this.acceleration = carMaxSpeed;
+    this.velocity = this.trayectory.mult(this.speed);
+    
     this.position.add(this.velocity);
     this.centerPosition.add(this.velocity);
   }
@@ -30,12 +31,12 @@ class Car {
     }
 
     if(this.centerPosition.y - this.image.width > height){
-      this.position.add(0, -height - 2*this.image.width);
-      this.centerPosition.add(0, -height - 2*this.image.width);
+      this.position.add(0, -height - this.image.width -20);
+      this.centerPosition.add(0, -height - this.image.width -20);
     } 
     else if (this.centerPosition.y + this.image.width < 0){
-      this.position.add(0, height + 2*this.image.width);
-      this.centerPosition.add(0, height + 2*this.image.width);
+      this.position.add(0, height + this.image.width + 20);
+      this.centerPosition.add(0, height + this.image.width + 20);
     }
   }
 
