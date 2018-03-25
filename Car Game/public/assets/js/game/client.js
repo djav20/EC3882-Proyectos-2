@@ -65,7 +65,7 @@ function setup() {
   car = new Car(50, height / 2, carImage);
   tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
 
-  socket = io.connect('http://localhost:3000');
+  socket = io.connect('http://192.168.1.105:3000');
   socket.on('gameVariables', updateVariables);
   //noLoop();
 }
@@ -113,7 +113,7 @@ function carPhysics(){
 
 function carCheck(){
   if(car.checkCrash(tool)){
-    socket.emit('score', score);
+    socket.emit('score', ++score);
     tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
   }
   car.checkBorders();
@@ -123,8 +123,6 @@ function carHonk(){
   if(sensorVariables.honk && !honk.isPlaying()){
   // if(breaks && !honk.isPlaying()){
     honk.play();
-  }
-  else {
   }
 }
 

@@ -12,19 +12,16 @@ var app = express();
 var server = app.listen(3000);
 var io = socket(server);
 io.sockets.on('connection', newConnection);
-//app.use(express.static('public'));
-
 app.use('/public', express.static(__dirname + '/public'));
-//app.use(express.static('public'));
 
 app.get('/', function(req, res){
-  /*if(clients.length == 0){
+  if(clients.length == 0){
     res.redirect('/game');
   }
   else{
     res.redirect('/phone');
-  }*/
-  res.redirect('/phone');
+  }
+  //res.redirect('/phone');
 });
 
 app.get('/game', function(req, res){
@@ -64,9 +61,9 @@ function newConnection(socket){
   socket.on('score', function(score){
     gameVariables.score = score;
   });
-
+  socket.emit('timer', clock);
   clients.push(socket);
-  timer.setInterval(testing, '', '1m');
+  //timer.setInterval(testing, '', '1m');
 }
 
 function testing(){
@@ -76,7 +73,10 @@ function testing(){
 // Game variables
 let started = false;
 let gameInterval;
-let clock = 100;
+let clock = 120;
+let gameStarted = false;
+let filterCounter = 0;
+let filterSum = 0;
 
 let gameVariables = {
   speed: 0,
@@ -104,7 +104,7 @@ function readSerial(){
         var channel2 = bluffConvertion(tempArray[2], tempArray[3]); // Revertimos el protocolo canal 2.
 
         assignVariables(channel1, channel2);
-        
+        console.log(gameVariables);
         broadcastData('gameVariables', gameVariables);
       }
     }
@@ -115,14 +115,22 @@ function readSerial(){
 function assignVariables(channel1, channel2){
   if(channel1.analogic > 90) channel1.analogic -= 360;
   if(channel1.analogic == -1) channel1.analogic = 0;
-  channel2.analogic = Math.floor(map(channel2.analogic, 10, 1950, 0, 100)) // reales: de 20 a 1910
+  if(channel2.analogic > 1950) channel2.analogic = 1950;
+  filterSum += channel2.analogic;
+  if(++filterCounter == 25){
+    filterSum /= 25;
+    channel2.analogic = Math.floor(map(filterSum, 80, 1950, 0, 100)) // reales: de 20 a 1910
+    if(channel2.analogic <= 2) channel2.analogic = 0;
+    gameVariables.speed = channel2.analogic;
+    filterSum = 0;
+    filterCounter = 0;
+  }
   
   gameVariables.angle = channel1.analogic;
-  gameVariables.speed = channel2.analogic;
   gameVariables.carBreak = channel1.digital1;
-  gameVariables.beep = channel1.digital2;
+  gameVariables.honk = channel1.digital2;
 
-  if(!gameStarted && gameVariables.speed > 15){
+  if(!gameStarted && gameVariables.speed > 7){
     gameStarted = true;
     gameInterval = setInterval(countdown, 1000);
   }
@@ -181,5 +189,3 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
 function map(n, start1, stop1, start2, stop2) {
   return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
 };
-
-gameInterval = setInterval(countdown, 1000);

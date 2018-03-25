@@ -1,17 +1,18 @@
 const frames = 60;
 const radius = 65;
 const xBar = 50;
-const yBar = 50 - radius / 4;
-
+const yBar = 80 - radius / 4;
+let rBar = 0;
+let gBar = 0;
 const barWidth = 30;
 const xCircle = 500;
 const yCircle1 = 80;
 const yCircle2 = 230;
 const xScore = 50;
-const yScore = 180;
+const yScore = 170;
 
 const xTimer = 50;
-const yTimer = 300;
+const yTimer = 230 + radius / 4;
 
 
 const tSize = 38;
@@ -22,6 +23,7 @@ let countdown = 0;
 
 let sensorVariables = {
   speed: 0,
+  barWidth: 0, 
   angle: 0,
   carBreak: 0,
   honk: 0,
@@ -33,15 +35,25 @@ function setup (){
   frameRate(frames);
   pixelDensity(1);
   textSize(tSize);
-  socket = io.connect('http://localhost:3000');
+  socket = io.connect('http://192.168.1.105:3000');
   socket.on('gameVariables', updateVariables);
   socket.on('timer', timer)
 }
 
 function draw() {
   background(210);
-  fill(255);
-  rect(xBar, yBar, sensorVariables.speed, barWidth);
+  
+  rBar = 255*sensorVariables.speed/50;
+  if(rBar > 255) rBar = 255;
+  gBar = 255 - 2*255/100*(sensorVariables.speed - 50);
+  if(gBar > 255) gBar = 255;
+  fill(rBar, gBar, 0);
+  console.log()
+  console.log('r: ' + rBar);
+  console.log('g: ' + gBar);
+  
+
+  rect(xBar, yBar, sensorVariables.barWidth, barWidth);
   if(sensorVariables.carBreak) {
     fill(255, 0, 0);
   }
@@ -65,7 +77,7 @@ function draw() {
 
 function updateVariables(params) {
   sensorVariables = params;
-  sensorVariables.speed = map(params.speed, 0, 100, 20, 400);
+  sensorVariables.barWidth = map(params.speed, 0, 100, 20, 400);
   // sensorVariables.speed = map(50, 0, 100, 10, 350);
 }
 
