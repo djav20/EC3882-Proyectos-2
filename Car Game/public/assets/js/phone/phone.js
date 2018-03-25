@@ -2,15 +2,16 @@ const frames = 60;
 const radius = 65;
 const xBar = 50;
 const yBar = 50 - radius / 4;
+
 const barWidth = 30;
 const xCircle = 500;
 const yCircle1 = 80;
 const yCircle2 = 230;
 const xScore = 50;
-const yScore = 120;
+const yScore = 180;
 
 const xTimer = 50;
-const yTimer = 200;
+const yTimer = 300;
 
 
 const tSize = 38;
@@ -23,7 +24,7 @@ let sensorVariables = {
   speed: 0,
   angle: 0,
   carBreak: 0,
-  beep: 0,
+  honk: 0,
   score: 0
 }
 
@@ -41,7 +42,6 @@ function draw() {
   background(210);
   fill(255);
   rect(xBar, yBar, sensorVariables.speed, barWidth);
-
   if(sensorVariables.carBreak) {
     fill(255, 0, 0);
   }
@@ -50,7 +50,7 @@ function draw() {
   }
   ellipse(xCircle, yCircle1, radius, radius);
 
-  if(sensorVariables.beep) {
+  if(sensorVariables.honk) {
     fill(255, 0, 0);
   }
   else {
@@ -65,12 +65,11 @@ function draw() {
 
 function updateVariables(params) {
   sensorVariables = params;
-  // sensorVariables.speed = map(params.speed, 0, 100, 10, 400);
-  sensorVariables.speed = map(50, 0, 100, 10, 350);
+  sensorVariables.speed = map(params.speed, 0, 100, 20, 400);
+  // sensorVariables.speed = map(50, 0, 100, 10, 350);
 }
 
 function timer(time){
-  console.log(time);
   countdown = convertSeconds(time);
 }
 

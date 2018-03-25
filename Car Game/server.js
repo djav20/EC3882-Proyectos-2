@@ -66,11 +66,11 @@ function newConnection(socket){
   });
 
   clients.push(socket);
-  timer.setInterval(testing, '', '16m');
+  timer.setInterval(testing, '', '1m');
 }
 
 function testing(){
-  broadcastData('gameVariables');
+  broadcastData('gameVariables', gameVariables);
 }
 
 // Game variables
@@ -82,7 +82,7 @@ let gameVariables = {
   speed: 0,
   angle: 0,
   carBreak: 0,
-  beep: 0,
+  honk: 0,
   score: 0
 }
 
@@ -130,14 +130,12 @@ function assignVariables(channel1, channel2){
 
 // Envia a todos los sockets conectados el parametro params.
 function broadcastData(tag, params){
-  //io.sockets.emit(tag, params);
-  for(let i = 0; i < clients.length; i++){
-    clients[i].emit('gameVariables', {hola: i+1});
-  }
+  io.sockets.emit(tag, params);
 }
 
 function countdown(){
   clock--;
+  // cambiar: let i = 1;
   for(let i = 0; i < clients.length; i++){
     clients[i].emit('timer', clock);
   }
@@ -183,6 +181,5 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
 function map(n, start1, stop1, start2, stop2) {
   return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
 };
-
 
 gameInterval = setInterval(countdown, 1000);

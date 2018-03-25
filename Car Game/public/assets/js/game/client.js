@@ -11,7 +11,8 @@ let toolImage;
 
 let car;
 let breaks = false;
-let carIsOn = false;
+let honkBoolean = true;
+let honk;
 
 let globalAngle = 0;
 let angleFactor = 80;
@@ -26,13 +27,15 @@ let sensorVariables = {
   speed: 0,
   angle: 0,
   carBreak: 0,
-  beep: 0,
+  honk: 0,
   score: 0
 }
 
-function preload(){
+function preload() {
   carImage = loadImage('./public/assets/images/car.png');
   toolImage = loadImage('./public/assets/images/tool.png');
+  soundFormats('mp3');
+  honk = loadSound('./public/assets/sounds/honk.mp3');
 }
 
 function setup() {
@@ -49,7 +52,6 @@ function setup() {
   velocitySlider = createSlider(0, 100, 0);
   velocitySlider.position(20, 50);
 
-  scoreText = createP('').html('Score: ' + score);
   breakButton = createButton('Break');
   breakButton.mousePressed(() => {
     breaks = !breaks;
@@ -70,27 +72,27 @@ function setup() {
 
 function draw() {
   background(155);
-
-  carRun();
+  carPhysics();
+  carCheck();
+  carHonk();
   tool.show();
   car.show();
 }
 
-function carRun(){
+function carPhysics(){
   if(car.speed > 0.1){ // Evitar girar sobre si mismo.
-    globalAngle += angleSlider.value() / angleFactor;
-    // globalAngle += sensorVariables.angle / angleFactor;
+    // globalAngle += angleSlider.value() / angleFactor;
+    globalAngle += sensorVariables.angle / angleFactor;
   }
 
   if(globalAngle >= 360) globalAngle -= 360;
   if(globalAngle < 0) globalAngle += 360;
   car.trayectory = angleToVector(globalAngle);
-
   
-  if(!breaks){
-  //if(!sensorVariables.carBreak){
-    let currentSpeed = map(velocitySlider.value(), 0, 100, 0, carMaxSpeed);
-    // let currentSpeed = map(sensorVariables.speed, 0, 100, 0, carMaxSpeed);
+  // if(!breaks){
+  if(!sensorVariables.carBreak){
+    // let currentSpeed = map(velocitySlider.value(), 0, 100, 0, carMaxSpeed);
+    let currentSpeed = map(sensorVariables.speed, 0, 100, 0, carMaxSpeed);
     if(car.speed > currentSpeed) { // Si desacelere.
       car.speed *= airDesacceleration;
     }
@@ -103,22 +105,27 @@ function carRun(){
     }
   }
   else {
-    console.log('breaks')
     car.speed *= breaksDesacceleration;
   }
   
-
   car.applyForces();
-  
+}
+
+function carCheck(){
   if(car.checkCrash(tool)){
-    scoreText.html('Score: ' + ++score);
     socket.emit('score', score);
     tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
   }
-
   car.checkBorders();
+}
 
-  scoreText.html('Score: ' + velocitySlider.value());
+function carHonk(){
+  if(sensorVariables.honk && !honk.isPlaying()){
+  // if(breaks && !honk.isPlaying()){
+    honk.play();
+  }
+  else {
+  }
 }
 
 function angleToVector(localAngle){
