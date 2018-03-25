@@ -1,11 +1,10 @@
 //p5.disableFriendlyErrors = true;
-// document.onkeydown = keyCheck;
 
-const frames = 60;
+const frames = 200;
 const carMaxSpeed = 5;
 const pixelsToCrash = 40;
-const airDesacceleration = 0.978;
-const breaksDesacceleration = 0.965;
+const airDesacceleration = 0.988;
+const breaksDesacceleration = 0.963;
 
 let carImage;
 let toolImage;
@@ -27,12 +26,13 @@ let sensorVariables = {
   speed: 0,
   angle: 0,
   carBreak: 0,
-  beep: 0
+  beep: 0,
+  score: 0
 }
 
 function preload(){
-  carImage = loadImage('assets/car.png');
-  toolImage = loadImage('assets/tool.png');
+  carImage = loadImage('./public/assets/images/car.png');
+  toolImage = loadImage('./public/assets/images/tool.png');
 }
 
 function setup() {
@@ -65,7 +65,7 @@ function setup() {
 
   socket = io.connect('http://localhost:3000');
   socket.on('gameVariables', updateVariables);
-  noLoop();
+  //noLoop();
 }
 
 function draw() {
@@ -112,6 +112,7 @@ function carRun(){
   
   if(car.checkCrash(tool)){
     scoreText.html('Score: ' + ++score);
+    socket.emit('score', score);
     tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
   }
 
@@ -125,7 +126,5 @@ function angleToVector(localAngle){
 }
 
 function updateVariables(params){
-  //console.log(params)
   sensorVariables = params;
-  redraw();
 }

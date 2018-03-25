@@ -4,14 +4,36 @@ const SerialPort = require('serialport');
 const NanoTimer = require('nanotimer');
 const express = require('express');
 const socket = require('socket.io');
+const path = require('path');
 
 // Configuracion del servidor.
 
 var app = express();
 var server = app.listen(3000);
 var io = socket(server);
-app.use(express.static('public'));
 io.sockets.on('connection', newConnection);
+//app.use(express.static('public'));
+
+app.use('/public', express.static(__dirname + '/public'));
+//app.use(express.static('public'));
+
+app.get('/', function(req, res){
+  /*if(clients.length == 0){
+    res.redirect('/game');
+  }
+  else{
+    res.redirect('/phone');
+  }*/
+  res.redirect('/phone');
+});
+
+app.get('/game', function(req, res){
+  res.sendFile(path.join(__dirname + '/public/game.html'));
+});
+
+app.get('/phone', function(req, res){
+  res.sendFile(path.join(__dirname + '/public/phone.html'));
+});
 
 // Configuracion del serial.
 
@@ -32,28 +54,36 @@ port.on('open', function(){
 });
 
 // Funciones de socket.
+
 let clients = new Array();
 
 function newConnection(socket){
   socket.on('disconnect', function(){
     clients.splice(clients.indexOf(socket, 1));
   });
+  socket.on('score', function(score){
+    gameVariables.score = score;
+  });
+
   clients.push(socket);
   timer.setInterval(testing, '', '16m');
 }
 
 function testing(){
-  //console.log(clients.length);
   broadcastData('gameVariables');
 }
 
 // Game variables
+let started = false;
+let gameInterval;
+let clock = 100;
 
-var gameVariables = {
+let gameVariables = {
   speed: 0,
   angle: 0,
   carBreak: 0,
-  beep: 0
+  beep: 0,
+  score: 0
 }
 
 function readSerial(){
@@ -76,7 +106,6 @@ function readSerial(){
         assignVariables(channel1, channel2);
         
         broadcastData('gameVariables', gameVariables);
-        //console.log(gameVariables);
       }
     }
   }
@@ -86,12 +115,17 @@ function readSerial(){
 function assignVariables(channel1, channel2){
   if(channel1.analogic > 90) channel1.analogic -= 360;
   if(channel1.analogic == -1) channel1.analogic = 0;
-  channel2.analogic = Math.floor(map(channel2.analogic, 0, 1950, 0, 100)) // reales: de 20 a 1910
+  channel2.analogic = Math.floor(map(channel2.analogic, 10, 1950, 0, 100)) // reales: de 20 a 1910
   
   gameVariables.angle = channel1.analogic;
   gameVariables.speed = channel2.analogic;
   gameVariables.carBreak = channel1.digital1;
   gameVariables.beep = channel1.digital2;
+
+  if(!gameStarted && gameVariables.speed > 15){
+    gameStarted = true;
+    gameInterval = setInterval(countdown, 1000);
+  }
 }
 
 // Envia a todos los sockets conectados el parametro params.
@@ -99,6 +133,17 @@ function broadcastData(tag, params){
   //io.sockets.emit(tag, params);
   for(let i = 0; i < clients.length; i++){
     clients[i].emit('gameVariables', {hola: i+1});
+  }
+}
+
+function countdown(){
+  clock--;
+  for(let i = 0; i < clients.length; i++){
+    clients[i].emit('timer', clock);
+  }
+  if(clock == 0){
+    clearInterval(gameInterval);
+    broadcastData('gameOver');
   }
 }
 
@@ -110,7 +155,7 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
   var digital1 = 0;
   var digital2 = 0;
 
-  var result ={
+  var result = {
     digital1: 0,
     digital2: 0,
     analogic: 0
@@ -138,3 +183,6 @@ function bluffConvertion(a, b){ // a: bits mas significativos, b: bits menos sig
 function map(n, start1, stop1, start2, stop2) {
   return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
 };
+
+
+gameInterval = setInterval(countdown, 1000);
