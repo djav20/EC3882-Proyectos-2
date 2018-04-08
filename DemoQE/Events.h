@@ -39,6 +39,7 @@
 #include "AD1.h"
 #include "Bit1.h"
 #include "CI2C1.h"
+#include "Bit2.h"
 
 void CI2C1_OnReceiveData(void);
 /*

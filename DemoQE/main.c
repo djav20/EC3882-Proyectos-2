@@ -35,6 +35,7 @@
 #include "AD1.h"
 #include "Bit1.h"
 #include "CI2C1.h"
+#include "Bit2.h"
 /* Include shared modules, which are used for whole project */
 #include "PE_Types.h"
 #include "PE_Error.h"
@@ -82,6 +83,10 @@ while (1){
 		b = dato >> 7;
 		b = b & 0x1F;
 		digital1 = Bit1_GetVal();
+		digital1 = !digital1;
+		digital2 = Bit2_GetVal();
+		digital2 = !digital2;
+		
 		if(digital1){
 			b = b | 0x40;
 		}
@@ -97,7 +102,7 @@ while (1){
 		dato2 = dato2 >> 4;
 		c = dato2 & 0x007F;
 		b = dato2 >> 7;
-		b = b & 0x1F;
+		b = b & 0x1F; 
 		if(digital1){
 			b = b | 0x40;
 		}
@@ -115,28 +120,7 @@ while (1){
 			} while (error != ERR_OK);
 		}
 		
-		/*do{
-			error = AS1_SendChar(trama[0]);
-		}while (error != ERR_OK);
-		
-		do{
-			error = AS1_SendChar(trama[1]);
-		}while (error != ERR_OK);
-				
-		do{
-			error = AS1_SendChar(trama[2]);
-		}while (error != ERR_OK);
-		
-		do{
-			error = AS1_SendChar(trama[3]);
-		}while (error != ERR_OK);
-		
-		do{
-			error = AS1_SendChar(trama[4]);
-		}while (error != ERR_OK);*/
-		
 		estado = 0;
-		
 	}
 }
 
