@@ -53,6 +53,7 @@ port.on('open', function(){
 // Funciones de socket.
 
 let clients = new Array();
+let lastAngle;
 
 function newConnection(socket){
   socket.on('disconnect', function(){
@@ -114,18 +115,25 @@ function readSerial(){
 // Funcion que recibe los canales y los asigna a las variables del juego.
 function assignVariables(channel1, channel2){
   if(channel1.analogic > 90) channel1.analogic -= 360;
+  // if(lastAngle > 0 && channel1.analogic < 0) {
+  //   channel1.analogic = 90;
+  //   lastAngle = channel1.analogic;
+  // }
+  
   if(channel1.analogic == -1) channel1.analogic = 0;
-  if(channel2.analogic > 1950) channel2.analogic = 1950;
+  // console.log(channel2.analogic)
+  if(channel2.analogic > 1350) channel2.analogic = 1350;
   filterSum += channel2.analogic;
   if(++filterCounter == 25){
     filterSum /= 25;
-    channel2.analogic = Math.floor(map(filterSum, 80, 1950, 0, 100)) // reales: de 20 a 1910
-    if(channel2.analogic <= 2) channel2.analogic = 0;
+    
+    channel2.analogic = Math.floor(map(filterSum, 2, 1350, 0, 100)) // reales: de 2 a 1260
+    if(channel2.analogic <= 5) channel2.analogic = 0;
     gameVariables.speed = channel2.analogic;
     filterSum = 0;
     filterCounter = 0;
   }
-  
+  // console.log(channel2.analogic);
   gameVariables.angle = channel1.analogic;
   gameVariables.carBreak = channel1.digital1;
   gameVariables.honk = channel1.digital2;

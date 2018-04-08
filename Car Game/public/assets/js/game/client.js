@@ -13,6 +13,7 @@ let car;
 let breaks = false;
 let honkBoolean = true;
 let honk;
+let over = false;
 
 let globalAngle = 0;
 let angleFactor = 80;
@@ -45,18 +46,6 @@ function setup() {
   pixelDensity(1);
   angleMode(DEGREES);
   
-  // DOM Elements.
-  angleSlider = createSlider(-45, 45, 0);
-  angleSlider.position(20, 20);
-
-  velocitySlider = createSlider(0, 100, 0);
-  velocitySlider.position(20, 50);
-
-  breakButton = createButton('Break');
-  breakButton.mousePressed(() => {
-    breaks = !breaks;
-  });
-  
   // Images resizing.
   carImage.resize(carImage.width / 3, carImage.height / 3);
   toolImage.resize(toolImage.width / 5, toolImage.height / 5);
@@ -65,13 +54,14 @@ function setup() {
   car = new Car(50, height / 2, carImage);
   tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
 
-  socket = io.connect('http://192.168.1.105:3000');
+  socket = io.connect('http://192.168.1.101:3000');
   socket.on('gameVariables', updateVariables);
+  socket.on('gameOver', gameOver);
   //noLoop();
 }
 
 function draw() {
-  background(155);
+  background(230);
   carPhysics();
   carCheck();
   carHonk();
@@ -113,7 +103,9 @@ function carPhysics(){
 
 function carCheck(){
   if(car.checkCrash(tool)){
-    socket.emit('score', ++score);
+    if(!over){
+      socket.emit('score', ++score);
+    }
     tool = new Tool(floor(random(toolImage.width, width - toolImage.width)), floor(random(toolImage.height, height - toolImage.height)), toolImage);
   }
   car.checkBorders();
@@ -132,4 +124,9 @@ function angleToVector(localAngle){
 
 function updateVariables(params){
   sensorVariables = params;
+  console.log(params)
+}
+
+function gameOver(){
+  over = true;
 }

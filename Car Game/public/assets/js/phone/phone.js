@@ -35,7 +35,7 @@ function setup (){
   frameRate(frames);
   pixelDensity(1);
   textSize(tSize);
-  socket = io.connect('http://192.168.1.105:3000');
+  socket = io.connect('http://192.168.1.101:3000');
   socket.on('gameVariables', updateVariables);
   socket.on('timer', timer)
 }
